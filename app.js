@@ -12,8 +12,6 @@ const multer = require('multer');
 
 app.set('view engine', 'ejs');
 
-const port = 5000;
-
 mongoose.Promise = global.Promise;
 
 // Connect to the Mongo DB
@@ -28,13 +26,14 @@ mongoose.connection.once('open', function () {
     // Init stream
     gfs = Grid(mongoose.connection.db, mongoose.mongo);
     gfs.collection('uploads');
-  //   console.log(gfs);
+    // console.log(gfs);
   })
   
   // Create storage engine
   const storage = new GridFSStorage({
     url: dbUri,
     file: (req, file) => {
+        console.log(file)
         return new Promise((resolve, reject) => {
             crypto.randomBytes(16, (err, buf) => {
                 if (err) {
@@ -89,7 +88,7 @@ mongoose.connection.once('open', function () {
   app.get('/files', (req, res) => {
     gfs.files.find().toArray((err, files) => {
         // Check if files
-        if(!files || files.length ===0) {
+        if(!files || files.length === 0) {
             return res.status(404).json({
                 err: 'No files exist'
             });
@@ -145,4 +144,4 @@ mongoose.connection.once('open', function () {
     })
   })
 
-app.listen(port, () => console.log(`Server started on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
